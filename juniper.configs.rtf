@@ -1,0 +1,85 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww17500\viewh21880\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf0 \CocoaLigature0 \
+\
+\
+\
+\
+r2\
+\
+set interfaces fe-0/0/2 vlan-tagging\
+set interfaces fe-0/0/2 encapsulation vlan-vpls\
+set interfaces fe-0/0/2 unit 512 encapsulation vlan-vpls\
+set interfaces fe-0/0/2 unit 512 vlan-id 512\
+set interfaces fe-0/0/2 unit 512 family vpls\
+\
+set interfaces fe-0/0/4 vlan-tagging\
+set interfaces fe-0/0/4 unit 512 vlan-id 512\
+set interfaces fe-0/0/4 unit 512 family inet address 150.1.1.1/24\
+\
+set interfaces lo0 unit 1 family inet address 6.6.6.6/32\
+\
+set routing-instances ce2 instance-type virtual-router\
+set routing-instances ce2 interface fe-0/0/4.512\
+set routing-instances ce2 interface lo0.1\
+set routing-instances ce2 routing-options static route 5.5.5.0/24 reject\
+set routing-instances ce2 protocols ospf export static-ospf\
+set routing-instances ce2 protocols ospf area 0.0.0.0 interface fe-0/0/4.512\
+set routing-instances ce2 protocols ospf area 0.0.0.0 interface lo0.1 passive\
+\
+set routing-instances bgp-vpls instance-type vpls\
+set routing-instances bgp-vpls interface fe-0/0/2.512\
+set routing-instances bgp-vpls route-distinguisher 120.1.255.2:1\
+set routing-instances bgp-vpls vrf-target target:555:1\
+set routing-instances bgp-vpls protocols vpls site-range 10\
+set routing-instances bgp-vpls protocols vpls no-tunnel-services\
+set routing-instances bgp-vpls protocols vpls site ce2 site-identifier 2\
+\
+\
+r6\
+\
+set interfaces fe-0/0/3 vlan-tagging\
+set interfaces fe-0/0/3 encapsulation vlan-vpls\
+set interfaces fe-0/0/3 unit 512 encapsulation vlan-vpls\
+set interfaces fe-0/0/3 unit 512 vlan-id 512\
+set interfaces fe-0/0/3 unit 512 family vpls\
+\
+set interfaces fe-0/0/5 vlan-tagging\
+set interfaces fe-0/0/5 unit 512 vlan-id 512\
+set interfaces fe-0/0/5 unit 512 family inet address 150.1.1.1/24\
+\
+set interfaces lo0 unit 1 family inet address 3.3.3.3/32\
+\
+set routing-instances ce1 instance-type virtual-router\
+set routing-instances ce1 interface fe-0/0/5.512\
+set routing-instances ce1 interface lo0.1\
+set routing-instances ce1 routing-options static route 4.4.4.0/24 reject\
+set routing-instances ce1 protocols ospf export static-ospf\
+set routing-instances ce1 protocols ospf area 0.0.0.0 interface fe-0/0/5.512\
+set routing-instances ce1 protocols ospf area 0.0.0.0 interface lo0.1 passive\
+\
+set routing-instances bgp-vpls instance-type vpls\
+set routing-instances bgp-vpls interface fe-0/0/3.512\
+set routing-instances bgp-vpls route-distinguisher 120.1.255.1:1\
+set routing-instances bgp-vpls vrf-target target:555:1\
+set routing-instances bgp-vpls protocols vpls site-range 10\
+set routing-instances bgp-vpls protocols vpls no-tunnel-services\
+set routing-instances bgp-vpls protocols vpls site ce1 site-identifier 1\
+\
+set policy-options policy-statement static-ospf term 1 from protocol static\
+set policy-options policy-statement static-ospf term 1 from route-filter 4.4.4.0/24 exact\
+set policy-options policy-statement static-ospf term 1 then accept\
+\
+\
+set policy-options community rtbh members 555:666 \
+set policy-options community no-export members no-export \
+\
+\
+set policy-options policy-statement rtbh term 1 then community set rtbh\
+set policy-options policy-statement rtbh term 1 then community add no-export\
+set policy-options policy-statement rtbh term 1 then next-hop 192.0.2.1\
+}
